@@ -55,7 +55,7 @@ The PX4 Offboard ROS2 package enables autonomous control of a UAV by generating 
 This software is released under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ## Author
-- Hannibal Paul (https://github.com/hpaul360)
+- [Hannibal Paul](https://github.com/hpaul360)
 
 ## Acknowledgments
 - This package is based on the PX4 Offboard Control example.
