@@ -40,6 +40,28 @@ class OffboardSetpoint(Node):
             history=HistoryPolicy.KEEP_LAST,
             depth=1
         )
+
+        # Load parameters from the YAML file
+        self.declare_parameters(
+            namespace='',
+            parameters=[
+                ('polygon_center', [0,0]),
+                ('circum_radius', 0.5),
+                ('n_sides', 4),
+                ('meter_per_sec', 0.5),
+                ('polygon_angle', 45),
+                ('uav_height', -0.8),
+                ('uav_yaw', 0.0),
+            ])
+
+        # Retrieve parameters
+        self.polygon_center = self.get_parameter('polygon_center').value
+        self.circum_radius = self.get_parameter('circum_radius').value
+        self.n_sides = self.get_parameter('n_sides').value
+        self.meter_per_sec = self.get_parameter('meter_per_sec').value
+        self.polygon_angle = self.get_parameter('polygon_angle').value
+        self.uav_height = self.get_parameter('uav_height').value
+        self.uav_yaw = self.get_parameter('uav_yaw').value
         
         # Publishers and Subscribers
         self.control_pub = self.create_publisher(OffboardControlMode, '/fmu/in/offboard_control_mode', 10)
@@ -68,11 +90,11 @@ class OffboardSetpoint(Node):
     def mode_callback(self, msg):
         self.offboard_mode = msg.flag_control_offboard_enabled
 
-    def polygon_path(self, center_point, n_sides, circum_radius, points_per_line, rotation_angle):
+    def polygon_path(self, polygon_center, n_sides, circum_radius, points_per_line, polygon_angle):
         # Get vertices
-        theta = np.linspace(0, 2*np.pi, n_sides+1) + np.radians(rotation_angle)
-        x = circum_radius * np.cos(theta) + center_point[0]
-        y = circum_radius * np.sin(theta) + center_point[1]
+        theta = np.linspace(0, 2*np.pi, n_sides+1) + np.radians(polygon_angle)
+        x = circum_radius * np.cos(theta) + polygon_center[0]
+        y = circum_radius * np.sin(theta) + polygon_center[1]
 
         # Add points between vertices
         path_coordinates = []
@@ -102,7 +124,7 @@ class OffboardSetpoint(Node):
         self.control_pub.publish(control_mode)
         
         # Get full polygon path
-        path = self.polygon_path(self.center_point, self.n_sides, self.circum_radius, self.points_per_line, self.rotation_angle)
+        path = self.polygon_path(self.polygon_center, self.n_sides, self.circum_radius, self.points_per_line, self.polygon_angle)
 
         # Start sending setpoints if in offboard mode
         if self.offboard_mode:
@@ -111,12 +133,12 @@ class OffboardSetpoint(Node):
             # Timestamp is automatically set inside PX4
             setpoint_traj.timestamp = 0
             px, py = path[self.counter]
-            pz = -2.0 # in m
+            pz = self.uav_height # in m
             setpoint_traj.position = [px, py, pz] # [x, y, z] in meters
             #setpoint_traj.velocity # in m/s
             #setpoint_traj.acceleration # in m/s^2
             #setpoint_traj.jerk # m/s^3 (for logging only)
-            setpoint_traj.yaw = 0.0*np.pi/180 # in rad
+            setpoint_traj.yaw = self.uav_yaw*np.pi/180.0 # in rad
             #setpoint_traj.yawspeed = 0.0 # in rad/s
 
             # Publish

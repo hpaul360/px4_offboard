@@ -1,0 +1,9 @@
+px4_offboard:
+  ros__parameters:
+    polygon_center: [0, 0] # Center of the polygon x,y in m
+    circum_radius: 0.5 # in m
+    n_sides: 6 # Number of sides of a polygon
+    meter_per_sec: 1.0 # Estimated expected speed in m/s(can be close/less than this value). Note this is just a estimate, only used to set number of setpoints in between vertices. This is not actual velocity control with feedback.
+    polygon_angle: 45 # in deg (Self note: Keep 45 for square.)
+    uav_height: -0.8 # in m. Should be a negative value.
+    uav_yaw: 0.0 # in deg

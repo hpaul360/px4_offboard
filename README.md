@@ -38,18 +38,24 @@ The PX4 Offboard ROS2 package enables autonomous control of a UAV by generating 
 3. Launch the `px4_offboard` node:
 
     ```bash
-    ros2 run px4_offboard offboard_setpoint
+    ros2 launch px4_offboard offboard_launch.py
     ```
 
 4. The UAV will follow a polygonal path based on the specified parameters.
 
-## Parameters
-- `center_point`: Center of the polygon in x, y coordinates.
-- `circum_radius`: Circumradius of the polygon.
-- `n_sides`: Number of sides of the polygon.
-- `meter_per_sec`: Estimated expected speed of the UAV in meters per second.
-- `rotation_angle`: Rotation angle of the polygon.
+## Connection Parameters
 
+Set parameters in the config file accordingly: px4_offboard/config/params.yaml
+```bash
+## Parameters
+polygon_center: [0, 3] # Center of the polygon x,y in m
+circum_radius: 0.5 # in m
+n_sides: 6 # Number of sides of a polygon
+meter_per_sec: 1.0 # Estimated expected speed in m/s(can be close/less than this value). Note this is just a estimate, only used to set number of setpoints in between vertices. This is not actual velocity control with feedback.
+polygon_angle: 45 # in deg (Self note: Keep 45 for square.)
+uav_height: -0.8 # in m. Should be a negative value.
+uav_yaw: 0.0 # in deg
+```
 
 ## License
 This software is released under the MIT License. See the [LICENSE](LICENSE) file for details.
