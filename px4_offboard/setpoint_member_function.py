@@ -75,13 +75,6 @@ class OffboardSetpoint(Node):
         # Other parameters
         self.offboard_mode = False
 
-        # Polygon parameters - set these according the requirements
-        self.center_point = [0, 0] # Center of the polygon x,y in m
-        self.circum_radius = 0.5 # in m
-        self.n_sides = 4 # Number of sides of a polygon
-        self.meter_per_sec = 0.5 # Estimated expected speed in m/s
-        self.rotation_angle = 45 # in deg (Self note: Keep 45 for square.)
-
         # Automatically set
         self.speed_factor = 9.76 # Obtained by flight (trial and error)
         self.points_per_line = int(2*np.pi*self.circum_radius*self.speed_factor/(self.n_sides*self.meter_per_sec))
